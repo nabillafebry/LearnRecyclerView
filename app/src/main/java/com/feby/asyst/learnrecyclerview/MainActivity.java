@@ -5,10 +5,21 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.feby.asyst.learnrecyclerview.adapter.AlbumAdapter;
 import com.feby.asyst.learnrecyclerview.model.Album;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 
@@ -25,15 +36,15 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerview);
 
-        for (int i=0; i<10; i++){
-            Album album = new Album();
-            album.setTitle("Title : "+i);
-            album.setArtist("Artist : "+i);
-            album.setImage("https://images-na.ssl-images-amazon.com/images/I/61McsadO1OL.jpg");
-            listAlbum.add(album);
-        }
+//        for (int i=0; i<10; i++){
+//            Album album = new Album();
+//            album.setTitle("Title : "+i);
+//            album.setArtist("Artist : "+i);
+//            album.setImage("https://images-na.ssl-images-amazon.com/images/I/61McsadO1OL.jpg");
+//            listAlbum.add(album);
+//        }
 
-   //     albumAdapter = new AlbumAdapter(this, listAlbum);
+        //     albumAdapter = new AlbumAdapter(this, listAlbum);
         albumAdapter = new AlbumAdapter(this, listAlbum, new AlbumAdapter.OnItemClickListener() {
             @Override
             public void onItemClik(Album album) {
@@ -47,6 +58,43 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(albumAdapter);
 
+        getDataWithVolley();
+    }
 
+    public void getDataWithVolley(){
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        String url = "http://rallycoding.herokuapp.com/api/music_albums";
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+
+                Log.d("Response", response.toString());
+
+                try {
+
+                    for (int i=0; i<response.length(); i++){
+
+                        Album album = new Gson().fromJson(response.getString(i), Album.class);
+
+                        listAlbum.add(album);
+                    }
+                    albumAdapter.notifyDataSetChanged();
+
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), "Error Occured", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        requestQueue.add(jsonArrayRequest);
     }
 }
