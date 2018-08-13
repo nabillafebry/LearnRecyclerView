@@ -16,12 +16,17 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.feby.asyst.learnrecyclerview.adapter.AlbumAdapter;
 import com.feby.asyst.learnrecyclerview.model.Album;
+import com.feby.asyst.learnrecyclerview.retrofit.ApiClient;
+import com.feby.asyst.learnrecyclerview.retrofit.ApiServices;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(albumAdapter);
 
-        getDataWithVolley();
+//        getDataWithVolley();
+        getDataWithRetrofit();
     }
 
     public void getDataWithVolley(){
@@ -92,9 +98,38 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getApplicationContext(), "Error Occured", Toast.LENGTH_SHORT).show();
+                error.printStackTrace();
             }
         });
 
         requestQueue.add(jsonArrayRequest);
+    }
+
+    public void getDataWithRetrofit(){
+
+        ApiServices apiServices = ApiClient.newInstance(getApplicationContext()).create(ApiServices.class);
+
+        Call<ArrayList<Album>> call = apiServices.getAlbums();
+
+        call.enqueue(new Callback<ArrayList<Album>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Album>> call, retrofit2.Response<ArrayList<Album>> response) {
+
+                if (response.body() != null){
+                    if (response.body().size()>0){
+
+                        listAlbum.addAll(response.body());
+
+                        albumAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Album>> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Error Occured", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
     }
 }
