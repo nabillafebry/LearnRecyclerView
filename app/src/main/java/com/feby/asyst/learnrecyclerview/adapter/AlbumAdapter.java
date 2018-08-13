@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.feby.asyst.learnrecyclerview.R;
 import com.feby.asyst.learnrecyclerview.model.Album;
 
@@ -61,7 +62,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
         holder.tvArtist.setText(album.getArtist());
         holder.tvAlbum.setText(album.getTitle());
 
-
+        Glide.with(mContext).load(album.getImage()).into(holder.ivAlbum);
 
     }
 
