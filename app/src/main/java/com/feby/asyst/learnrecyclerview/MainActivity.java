@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import com.feby.asyst.learnrecyclerview.adapter.AlbumAdapter;
 import com.feby.asyst.learnrecyclerview.model.Album;
@@ -32,7 +33,13 @@ public class MainActivity extends AppCompatActivity {
             listAlbum.add(album);
         }
 
-        albumAdapter = new AlbumAdapter(this, listAlbum);
+   //     albumAdapter = new AlbumAdapter(this, listAlbum);
+        albumAdapter = new AlbumAdapter(this, listAlbum, new AlbumAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClik(Album album) {
+                Toast.makeText(getApplicationContext(), album.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);

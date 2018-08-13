@@ -19,12 +19,24 @@ import java.util.ArrayList;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder>{
 
+    public interface OnItemClickListener{
+        void onItemClik(Album album);
+    }
+
     Context mContext;
     ArrayList<Album> mListAlbum;
+    OnItemClickListener listener;
 
     public AlbumAdapter(Context context, ArrayList<Album> listAlbum) {
         this.mContext = context;
         this.mListAlbum = listAlbum;
+
+    }
+
+    public AlbumAdapter(Context context, ArrayList<Album> listAlbum, OnItemClickListener listener) {
+        this.mContext = context;
+        this.mListAlbum = listAlbum;
+        this.listener = listener;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
@@ -58,13 +70,20 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-        Album album = mListAlbum.get(position);
+        final Album album = mListAlbum.get(position);
 
         holder.tvArtist.setText(album.getArtist());
         holder.tvAlbum.setText(album.getTitle());
 
         RequestOptions requestOptions = new RequestOptions().placeholder(R.drawable.gambar).error(R.drawable.gambar);
         Glide.with(mContext).load(album.getImage()).apply(requestOptions).into(holder.ivAlbum);
+
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClik(album);
+            }
+        });
 
     }
 
