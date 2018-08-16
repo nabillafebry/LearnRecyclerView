@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.feby.asyst.mymovie.model.Movie;
 import com.feby.asyst.mymovie.utility.Constant;
+import com.feby.asyst.mymovie.utility.DateUtils;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -31,7 +32,7 @@ public class DetailsActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null){
             Movie movie = getIntent().getExtras().getParcelable("movie");
             tvTitleDetails.setText(movie.getTitle());
-            tvReleaseDetails.setText(movie.getReleaseDate());
+            tvReleaseDetails.setText(DateUtils.formatDate("yyyy-MM-dd", "dd MMMM yyyy", movie.getReleaseDate()));
             tvOverviewDetails.setText(movie.getOverview());
 
             RequestOptions requestOptions = new RequestOptions().placeholder(R.drawable.ic_broken).error(R.drawable.ic_broken);
